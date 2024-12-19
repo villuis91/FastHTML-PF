@@ -35,14 +35,34 @@ def home():
 
 @rt("/playground")
 def ml_playground():
+    s = (
+        cm.Select(
+            *[cm.Option(ds, value=ds) for ds in list_loadable_datasets()],
+            id="dataset-selector",
+        ),
+    )
+    d = s[0]
+    name = "load_breast_cancer"
     return cm.Titled(
         "Learn and train your own ML algorithm",
         cm.P("Sklearn basic data preprocessing and simple MLP training"),
-        cm.Select(
-            *[cm.Option(ds, value=ds) for ds in list_loadable_datasets()], id="dataset-selector"
+        s,
+        cm.P(str(dir(d))),
+        cm.P(str(dir(d.tag))),
+        cm.Div(
+            cm.NotStr(load_ds_preview("load_breast_cancer")),
+            cls="table-preview",
+            hx_get="/preview-dataset/load_breast_cancer",
+            id="table-preview-container",
         ),
-        cm.NotStr(load_ds_preview())
     )
+
+
+@rt("/preview-dataset/{name}")
+def get(name):
+    print("hola")
+    print(name)
+    return cm.NotStr(load_ds_preview("load_iris"))
 
 
 cm.serve(reload=True)
